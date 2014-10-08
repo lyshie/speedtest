@@ -1,0 +1,65 @@
+1. Fancy Speed Test
+   http://www.brandonchecketts.com/open-source-speedtest
+
+2. Perl / CPAN modules
+   * CGI
+   * DBI / DBD::SQLite
+   * Template
+   * HTTP::BrowserDetect
+
+3. SQLite
+   # yum install sqlite (under CentOS or Fedora)
+
+4. jQuery / jQuery UI
+   http://jquery.com/
+   http://jqueryui.com/
+
+5. SQLite schema
+
+CREATE TABLE speedtest (
+    id          INTEGER PRIMARY KEY,
+    time        INTEGER,
+    ip          TEXT,
+    downspeed   FLOAT,
+    downtime    FLOAT,
+    downsize    FLOAT,
+    upspeed     FLOAT,
+    uptime      FLOAT,
+    upsize      FLOAT,
+    useragent   TEXT,
+    tag         TEXT,
+    UNIQUE      (id)
+);
+
+6. Apache configuration
+
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %T/%D %I/%O" combined 
+
+<VirtualHost *:80>
+    ServerAdmin lyshie@cc.nthu.edu.tw
+    DocumentRoot /opt/local/speedtest
+    ServerName speedtest.net.nthu.edu.tw
+    ErrorLog logs/speedtest.net.nthu.edu.tw-error_log
+    CustomLog logs/speedtest.net.nthu.edu.tw-access_log combined
+</VirtualHost>
+
+<Directory /var/www/html/speedtest/>
+   Options +ExecCGI
+   AddHandler cgi-script cgi pl
+   order deny,allow
+   deny from all
+   allow from 127.0.0.1
+   allow from 140.114.0.0/16
+   <Files *.cfg>
+       deny from all
+   </Files>
+   <Files *.tt>
+       deny from all
+   </Files>
+   <Files *.sqlite>
+       deny from all
+   </Files>
+</Directory>
+
+-------------------------------------------------------------------------------
+                                           lyshie(at)mx(dot)nthu(dot)edu(dot)tw

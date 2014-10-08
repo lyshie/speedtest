@@ -1,0 +1,51 @@
+[% USE format %]
+[% mbps = format("%.2f") %]
+[% USE FormatNumber %]
+[% WRAPPER page.tt
+           title = "下載速度測試 - Apache Log 分析結果"
+%]
+<h2>
+    <img alt="" src="../notice.png" />
+    <a href="../show.pl">測試結果</a>
+</h2>
+<h2>Apache Log 分析結果 (更新時間 [% parse_time %])</h2>
+<ul>
+    <li>資料分析使用 Apache Module <a href="http://httpd.apache.org/docs/current/mod/mod_logio.html" target="_blank">mod_logio</a> 紀錄</li>
+</ul>
+[% no = 0
+%]
+<table border="1">
+<thead>
+<tr>
+    <th class="center">No.</th>
+    <th class="center">日期時間<br />Date Time</th>
+    <th class="center">URI</th>
+    <th class="center">來源位址<br />From</th>
+    <th class="center">下載資料量 (bytes)<br />Download size</th>
+    <th class="center">花費時間 (sec)<br />Download time</th>
+    <th class="center" colspan="2">下載速度 (Mbps)<br />Download speed</th>
+    <th class="center">瀏覽器<br />Browser</th>
+</tr>
+</thead>
+<tbody>
+[% FOREACH row IN rows %]
+[% no = no + 1 %]
+[% IF (no % 2) %]
+<tr class="center">
+[% ELSE %]
+<tr class="center odd">
+[% END %]
+    <td class="center">[% no %]</td>
+    <td>[% row.datetime %]</td>
+    <td>[% row.uri %]</td>
+    <td>[% row.client %]</td>
+    <td class="right">[% FormatNumber.formatNumber(row.out_size) %]</td>
+    <td class="right">[% row.time %]</td>
+    <td class="right">[% mbps(row.speed) %]</td>
+    <td class="left"><img src="../bar.gif" alt="bar" width="[% mbps(row.speed * 2) %]" height="12" /></td>
+    <td><img alt="" src="../browser/[% row.browser FILTER lower %].png" /> [% row.useragent %]</td>
+</tr>
+[% END %]
+</tbody>
+</table>
+[% END %]

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-TW" xml:lang="zh-TW">
+<head>
+    <title>[% title %]</title>
+    <meta http-equiv="Content-Type" content="text/html" />
+    <meta http-equiv="refresh" content="600" />
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+    <link rel="stylesheet" type="text/css" href="../style2.css" />
+    <link rel="stylesheet" type="text/css" href="../style3.css" />
+<!--
+#===============================================================================
+#
+#  DESCRIPTION:  Speed Test Tools
+#
+#       AUTHOR:  Hsieh Li-Yi <lyshie@mx.nthu.edu.tw>
+#      COMPANY:  NTHU
+#      VERSION:  1.0
+#      CREATED:  10/12/2010 13:52:49
+#     REVISION:  1
+#===============================================================================
+-->
+[% header %]
+</head>
+<body>
+<h1>下載速度測試服務</h1>
+<hr />
+[% content %]
+<div style="text-align: right;">
+<hr />
+本服務由計算機與通訊中心網路系統組提供<br />
+lyshie(at)mx(dot)nthu(dot)edu(dot)tw
+</div>
+</body>
+</html>

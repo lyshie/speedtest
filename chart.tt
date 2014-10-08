@@ -1,0 +1,55 @@
+[% USE date %]
+[% USE format %]
+[% mbps = format("%.2f") %]
+[% WRAPPER page.tt
+           title = "下載速度測試 - 統計資料"
+%]
+<h2>
+    <img alt="" src="notice.png" />
+    <a href="show.pl">測試結果</a>
+</h2>
+<form action="chart.pl" method="get">
+<select name="minute">
+<option disabled="disabled">--- 時間範圍 ---</option>
+<option value="180" selected="selected">最近 3 小時內</option>
+<option value="1440">最近 1 天內</option>
+<option value="10080">最近 1 週內</option>
+</select>
+<input type="submit" />
+</form>
+<h2>最近 [% minute_string %]內，所有網段下載速度測試統計資料</h2>
+[% no = 0
+%]
+<table border="1">
+<thead>
+<tr>
+    <th class="center">No.</th>
+    <th class="center">網段<br />Subnet</th>
+    <th class="center">測試數量<br />Count</th>
+    <th class="center" colspan="2">最大下載速度 (Mbps)<br />Max speed</th>
+    <th class="center" colspan="2">最小下載速度 (Mbps)<br />Min speed</th>
+    <th class="center" colspan="2">平均下載速度 (Mbps)<br />Average speed</th>
+</tr>
+</thead>
+<tbody>
+[% FOREACH row IN rows %]
+[% no = no + 1 %]
+[% IF (no % 2) %]
+<tr class="center">
+[% ELSE %]
+<tr class="center odd">
+[% END %]
+    <td class="center">[% no %]</td>
+    <td><a href="board.pl?ip=[% row.subnet %]0&amp;minute=[% minute %]">[% row.subnet %]</a></td>
+    <td class="right">[% row.count %]</td>
+    <td class="right">[% downspeed = (row.max / 1024) %][% mbps(downspeed) %]</td>
+    <td class="left"><img src="bar.gif" alt="bar" width="[% mbps(downspeed * 2) %]" height="12" /></td>
+    <td class="right">[% downspeed = (row.min / 1024) %][% mbps(downspeed) %]</td>
+    <td class="left"><img src="bar.gif" alt="bar" width="[% mbps(downspeed * 2) %]" height="12" /></td>
+    <td class="right">[% downspeed = (row.sum / row.count / 1024) %][% mbps(downspeed) %]</td>
+    <td class="left"><img src="bar.gif" alt="bar" width="[% mbps(downspeed * 2) %]" height="12" /></td>
+</tr>
+[% END %]
+</tbody>
+</table>
+[% END %]

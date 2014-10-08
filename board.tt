@@ -1,0 +1,128 @@
+[% USE date %]
+[% USE format %]
+[% USE FormatNumber %]
+[% mbps = format("%.2f") %]
+[% WRAPPER page.tt
+           title = "下載速度測試 - 排行榜"
+%]
+<h2>
+    <img alt="" src="notice.png" />
+    <a href="show.pl">測試結果</a>
+</h2>
+<h2>您的來源 ([% ip %]) 同網段內下載速度測試排行榜</h2>
+<form action="board.pl" method="get">
+<input type="hidden" name="ip" value="[% ip %]" />
+<select name="minute">
+<option disabled="disabled">--- 時間範圍 ---</option>
+<option value="180" selected="selected">最近 3 小時內</option>
+<option value="1440">最近 1 天內</option>
+<option value="10080">最近 1 週內</option>
+</select>
+<input type="submit" />
+</form>
+<h2>最近 [% minute_string %]內，下載速度測試前 [% top_rows.size %] 名</h2>
+[% no = 0
+   max = 0
+   min = 999999
+   sum = 0
+%]
+<table border="1">
+<thead>
+<tr>
+    <th class="center">No.</th>
+    <th class="center">測試時間<br />Time</th>
+    <th class="center" colspan="2">下載速度 (Mbps)<br />Download speed</th>
+    <th class="center">花費時間 (sec)<br />Download time</th>
+    <th class="center">下載資料量 (kbytes)<br />Download size</th>
+    <th class="center">來源位址<br />From</th>
+    <th class="center">瀏覽器<br />Browser</th>
+</tr>
+</thead>
+<tbody>
+[% FOREACH row IN top_rows %]
+[% no = no + 1 %]
+[% IF (no % 2) %]
+<tr class="center">
+[% ELSE %]
+<tr class="center odd">
+[% END %]
+    <td class="center">[% no %]</td>
+    <td>[% date.format(row.time, "%Y-%m-%d %H:%M:%S") %]</td>
+    <td class="right">[% downspeed = (row.downspeed / 1024) %][% mbps(downspeed) %]</td>
+    <td class="left"><img src="bar.gif" alt="bar" width="[% mbps(downspeed * 2) %]" height="12" /></td>
+    <td class="right">[% row.downtime %]</td>
+    <td class="right">[% FormatNumber.formatNumber(row.downsize) %]</td>
+    <td>[% row.ip %]</td>
+    <td><img alt="" src="browser/[% row.browser FILTER lower %].png" /> [% row.useragent %]</td>
+</tr>
+[% sum = sum + downspeed %]
+[% IF downspeed > max %]
+    [% max = downspeed %]
+[% END %]
+[% IF downspeed < min %]
+    [% min = downspeed %]
+[% END %]
+[% END %]
+<tr>
+    <td class="right" colspan="8">
+        <b>最大(max)：</b>[% mbps(max) %]Mbps, 
+        <b>最小(min)：</b>[% mbps(min) %]Mbps, 
+        <b>平均(avg)：</b>[% IF top_rows.size %][% mbps(sum / top_rows.size) %][% END %]Mbps
+    </td>
+</tr>
+</tbody>
+</table>
+
+<h2>最近 [% minute_string %]內，下載速度測試後 [% last_rows.size %] 名</h2>
+[% no = 0
+   max = 0
+   min = 999999
+   sum = 0
+%]
+<table border="1">
+<thead>
+<tr>
+    <th class="center">No.</th>
+    <th class="center">測試時間<br />Time</th>
+    <th class="center" colspan="2">下載速度 (Mbps)<br />Download speed</th>
+    <th class="center">花費時間 (sec)<br />Download time</th>
+    <th class="center">下載資料量 (kbytes)<br />Download size</th>
+    <th class="center">來源位址<br />From</th>
+    <th class="center">瀏覽器<br />Browser</th>
+</tr>
+</thead>
+<tbody>
+[% FOREACH row IN last_rows %]
+[% no = no + 1 %]
+[% IF (no % 2) %]
+<tr class="center">
+[% ELSE %]
+<tr class="center odd">
+[% END %]
+    <td class="center">[% no %]</td>
+    <td>[% date.format(row.time, "%Y-%m-%d %H:%M:%S") %]</td>
+    <td class="right">[% downspeed = (row.downspeed / 1024) %][% mbps(downspeed) %]</td>
+    <td class="left"><img src="bar.gif" alt="bar" width="[% mbps(downspeed * 2) %]" height="12" /></td>
+    <td class="right">[% row.downtime %]</td>
+    <td class="right">[% FormatNumber.formatNumber(row.downsize) %]</td>
+    <td>[% row.ip %]</td>
+    <td><img alt="" src="browser/[% row.browser FILTER lower %].png" /> [% row.useragent %]</td>
+</tr>
+[% sum = sum + downspeed %]
+[% IF downspeed > max %]
+    [% max = downspeed %]
+[% END %]
+[% IF downspeed < min %]
+    [% min = downspeed %] 
+[% END %] 
+[% END %]
+<tr>
+    <td class="right" colspan="8">
+        <b>最大(max)：</b>[% mbps(max) %]Mbps, 
+        <b>最小(min)：</b>[% mbps(min) %]Mbps, 
+        <b>平均(avg)：</b>[% IF last_rows.size %][% mbps(sum / last_rows.size ) %][% END %]Mbps
+    </td>
+</tr>
+</tbody>
+</table>
+[% END %]

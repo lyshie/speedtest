@@ -1,0 +1,135 @@
+[% USE date %]
+[% USE format %]
+[% USE FormatNumber %]
+[% mbps = format("%.2f") %]
+[% WRAPPER page.tt
+           title = "下載速度測試"
+%]
+<noscript><h2 style="color: red;">(請記得開啟 JavaScript 支援)</h2></noscript>
+<h2>
+    <img alt="" src="notice.png" />
+    <a href="download.php">請按這裡進行下載速度測試！</a>
+</h2>
+<ul>
+    <li>本服務僅開放本校 IP (140.114.*.*) 進行測試。</li>
+    <li>
+        本測試點 ([% server_addr %]) 位於<a href="http://net.nthu.edu.tw/2009/network:backbone" target="_blank">校園網路核心路由器 (Core Router)</a> 上，測試結果為您的電腦與校園骨幹的網路速度，下載速度依個人電腦忙碌程度、瀏覽器種類與連線狀況而異。
+    </li>
+    <li>
+        請開啟瀏覽器 JavaScript 支援，測試過程將自動下載 10,000~1,000,000 kbytes 不等的資料量，測試期間請勿同時進行其他連線或下載動作。
+    </li>
+    <li>本服務採用 <a href="http://www.brandonchecketts.com/open-source-speedtest" target="_blank">Fancy Speed Test</a> 工具，如需原始碼請至該<a href="http://www.brandonchecketts.com/open-source-speedtest" target="_blank">網站下載</a>。</li>
+    <li>手動下載測試 <a href="/10mb">10MB 檔案</a>、<a href="/100mb">100MB 檔案</a>、<a href="/200mb">200MB 檔案</a>，請自行參閱瀏覽器下載進度指示或<a href="parse/apache_log.html">伺服器紀錄分析結果</a>。</li>
+</ul>
+<h2>一、<a href="board.pl">同網段排行榜</a>、<a href="chart.pl">所有網段統計資料</a></h2>
+<h2>二、<a href="query.pl">歷史資料查詢</a>、<a href="parse/apache_log.html">伺服器紀錄分析 (每 3 分鐘定時分析)</a></h2>
+<h2>三、您的來源 ([% ip %]) 最近 [% rows.size %] 次測試結果</h2>
+[% no = 0
+   max = 0
+   min = 999999
+   sum = 0
+%]
+<table border="1">
+<thead>
+<tr>
+    <th class="center">No.</th>
+    <th class="center">測試時間<br />Time</th>
+    <th class="center" colspan="2">下載速度 (Mbps)<br />Download speed</th>
+    <th class="center">花費時間 (sec)<br />Download time</th>
+    <th class="center">下載資料量 (kbytes)<br />Download size</th>
+    <th class="center">來源位址<br />From</th>
+    <th class="center">瀏覽器<br />Browser</th>
+</tr>
+</thead>
+<tbody>
+[% FOREACH row IN rows %]
+[% no = no + 1 %]
+[% IF (no % 2) %]
+[% IF (no == 1) && http_referer %]
+<tr class="center notice">
+[% ELSE %]
+<tr class="center">
+[% END %]
+[% ELSE %]
+<tr class="center odd">
+[% END %]
+    <td class="center">[% no %]</td>
+    <td>[% date.format(row.time, "%Y-%m-%d %H:%M:%S") %]</td>
+    <td class="right">[% downspeed = (row.downspeed / 1024) %][% mbps(downspeed) %]</td>
+    <td class="left"><img src="bar.gif" alt="bar" width="[% mbps(downspeed * 2) %]" height="12" /></td>
+    <td class="right">[% row.downtime %]</td>
+    <td class="right">[% FormatNumber.formatNumber(row.downsize) %]</td>
+    <td>[% row.ip %]</td>
+    <td><img alt="" src="browser/[% row.browser FILTER lower %].png" /> [% row.useragent %]</td>
+</tr>
+[% sum = sum + downspeed %]
+[% IF downspeed > max %]
+    [% max = downspeed %]
+[% END %]
+[% IF downspeed < min %]
+    [% min = downspeed %]
+[% END %]
+[% END %]
+<tr>
+    <td class="right" colspan="8">
+        <b>最大(max)：</b>[% mbps(max) %]Mbps, 
+        <b>最小(min)：</b>[% mbps(min) %]Mbps, 
+        <b>平均(avg)：</b>[% IF rows.size %][% mbps(sum / rows.size) %][% END %]Mbps
+    </td>
+</tr>
+</tbody>
+</table>
+
+<h2>四、與您同網段最近 [% subnet_rows.size %] 次測試結果</h2>
+[% no = 0
+   max = 0
+   min = 999999
+   sum = 0
+%]
+<table border="1">
+<thead>
+<tr>
+    <th class="center">No.</th>
+    <th class="center">測試時間<br />Time</th>
+    <th class="center" colspan="2">下載速度 (Mbps)<br />Download speed</th>
+    <th class="center">花費時間 (sec)<br />Download time</th>
+    <th class="center">下載資料量 (kbytes)<br />Download size</th>
+    <th class="center">來源位址<br />From</th>
+    <th class="center">瀏覽器<br />Browser</th>
+</tr>
+</thead>
+<tbody>
+[% FOREACH row IN subnet_rows %]
+[% no = no + 1 %]
+[% IF (no % 2) %]
+<tr class="center">
+[% ELSE %]
+<tr class="center odd">
+[% END %]
+    <td class="center">[% no %]</td>
+    <td>[% date.format(row.time, "%Y-%m-%d %H:%M:%S") %]</td>
+    <td class="right">[% downspeed = (row.downspeed / 1024) %][% mbps(downspeed) %]</td>
+    <td class="left"><img src="bar.gif" alt="bar" width="[% mbps(downspeed * 2) %]" height="12" /></td>
+    <td class="right">[% row.downtime %]</td>
+    <td class="right">[% FormatNumber.formatNumber(row.downsize) %]</td>
+    <td>[% row.ip %]</td>
+    <td><img alt="" src="browser/[% row.browser FILTER lower %].png" /> [% row.useragent %]</td>
+</tr>
+[% sum = sum + downspeed %]
+[% IF downspeed > max %]
+    [% max = downspeed %]
+[% END %]
+[% IF downspeed < min %]
+    [% min = downspeed %] 
+[% END %] 
+[% END %]
+<tr>
+    <td class="right" colspan="8">
+        <b>最大(max)：</b>[% mbps(max) %]Mbps, 
+        <b>最小(min)：</b>[% mbps(min) %]Mbps, 
+        <b>平均(avg)：</b>[% IF rows.size %][% mbps(sum / subnet_rows.size ) %][% END %]Mbps
+    </td>
+</tr>
+</tbody>
+</table>
+[% END %]

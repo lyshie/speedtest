@@ -1,0 +1,100 @@
+body, table {
+	border-collapse: collapse;
+	font-family: "Trebuchet MS", "Lucida Sans Unicode", verdana, lucida, helvetica, sans-serif;
+	font-size: 11pt;
+}
+caption {
+	font-size: 1.4em;
+	font-stretch: condensed;
+	font-weight: bold;
+	padding-bottom: 5px;
+	text-align: left;
+	text-transform: uppercase;
+}
+th, td {
+	border-bottom: 1px solid #666;
+	border-top: 1px solid #666;
+	padding: 0.6em;
+	vertical-align: 4px;
+	text-align: left;
+}
+th {
+	text-align: left;
+}
+thead th, tfoot th, tfoot td {
+	background-color: #cc9;
+	font-size: 1.1em;
+}
+tbody th {
+	background: url('bullet_vacancy.gif') no-repeat 6px 0.8em;
+	padding-left: 24px;
+}
+tbody th, td {
+	background-color:#eee;
+}
+tbody tr:hover td, tbody tr:hover th {
+	background-color: #E5E5CB;
+}
+tr.odd td, tr.odd th {
+	background-color: #ddd;
+}
+tbody a {
+	color: #333;
+}
+tbody a:visited {
+	color: #999999;
+}
+tbody a:hover {
+	color: #33c;
+}
+tbody a:active {
+	color: #33c;
+}
+thead td a {
+	background: url('external.gif') no-repeat right 0.4em;
+	padding-right: 12px;
+}
+tbody td+td+td+td a {
+	background: url('external.gif') no-repeat right 0.4em;
+	padding-right: 12px;
+}
+tfoot th {
+	text-align: right;
+}
+tfoot th:after {
+	content: ":";
+}
+tr.suspended td.normal {
+	text-shadow: gray 1px 1px;
+	font-style: italic;
+	text-decoration: line-through;
+}
+.title {
+	background: url('bullet_vacancy.gif') no-repeat 6px 0em;
+	padding-left: 24px;
+}
+.warning {
+	text-shadow: gray 1px 1px;
+	color: #ffff00;
+}
+.error {
+	text-shadow: gray 1px 1px;
+	color: #ff0000;
+}
+pre {
+	text-align: left;
+	overflow: auto;
+	white-space: pre-wrap;      /* CSS2.1 compliant */
+	white-space: -moz-pre-wrap; /* Mozilla-based browsers */
+	white-space: -o-pre-wrap;   /* Opera 7+ */
+}
+tbody td.cn {
+        color: white;
+}
+tbody td.cn:hover {
+        color: black;
+}
+textarea {
+	font-family: monospace;
+	font-size: 0.8em;
+}

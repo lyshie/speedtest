@@ -1,0 +1,100 @@
+[% USE date %]
+[% USE format %]
+[% USE FormatNumber %]
+[% mbps = format("%.2f") %]
+[% WRAPPER page_jquery.tt
+           title = "下載速度測試 - 歷史資料查詢"
+%]
+<script type="text/javascript">
+$(function() {
+    var dates = $("#begin_time_picker, #end_time_picker").datepicker({
+        altFormat: '@',
+        onSelect: function( selectedDate ) {
+            var option = this.id == "begin_time_picker" ? "minDate" : "maxDate",
+                instance = $( this ).data( "datepicker" );
+            date = $.datepicker.parseDate(
+                       instance.settings.dateFormat ||
+                       $.datepicker._defaults.dateFormat,
+                       selectedDate, instance.settings );
+            dates.not( this ).datepicker( "option", option, date );
+
+            var selector = this.id;
+            selector = selector.replace("_picker", "");
+            var bias = selector.indexOf("end_time") == -1 ? 0 : 86399;
+            $("#" + selector).val($.datepicker.formatDate('@', date) / 1000 + bias);
+        }
+    });
+});
+</script>
+<h2>
+    <img alt="" src="notice.png" />
+    <a href="show.pl">測試結果</a>
+</h2>
+<h2>[% ip %] 同網段內下載速度測試歷史資料</h2>
+<h2>([% begin_time %] ~ [% end_time %])</h2>
+<div style="margin: 4px;">
+<form id="query_form" action="query.pl" method="get">
+<input type="hidden" name="begin_time" id="begin_time" />
+<input type="hidden" name="end_time" id="end_time" />
+<label for="ip">連線來源：</label>
+<input type="text" name="ip" id="ip" value="[% ip %]" /> (如：完整字串 140.114.64.130 或部份 140.114.)
+<br />
+<label for="begin_time_picker">起始時間：</label>
+<input type="text" id="begin_time_picker" readonly="readonly" />
+<br />
+<label for="end_time_picker">結束時間：</label>
+<input type="text" id="end_time_picker" readonly="readonly" /> <input type="submit" />
+</form>
+</div>
+[% no = 0
+   max = 0
+   min = 999999
+   sum = 0
+%]
+<table border="1">
+<thead>
+<tr>
+    <th class="center">No.</th>
+    <th class="center">測試時間<br />Time</th>
+    <th class="center" colspan="2">下載速度 (Mbps)<br />Download speed</th>
+    <th class="center">花費時間 (sec)<br />Download time</th>
+    <th class="center">下載資料量 (kbytes)<br />Download size</th>
+    <th class="center">來源位址<br />From</th>
+    <th class="center">瀏覽器<br />Browser</th>
+</tr>
+</thead>
+<tbody>
+[% FOREACH row IN rows %]
+[% no = no + 1 %]
+[% IF (no % 2) %]
+<tr class="center">
+[% ELSE %]
+<tr class="center odd">
+[% END %]
+    <td class="center">[% no %]</td>
+    <td>[% date.format(row.time, "%Y-%m-%d %H:%M:%S") %]</td>
+    <td class="right">[% downspeed = (row.downspeed / 1024) %][% mbps(downspeed) %]</td>
+    <td class="left"><img src="bar.gif" alt="bar" width="[% mbps(downspeed * 2) %]" height="12" /></td>
+    <td class="right">[% row.downtime %]</td>
+    <td class="right">[% FormatNumber.formatNumber(row.downsize) %]</td>
+    <td>[% row.ip %]</td>
+    <td><img alt="" src="browser/[% row.browser FILTER lower %].png" /> [% row.useragent %]</td>
+</tr>
+[% sum = sum + downspeed %]
+[% IF downspeed > max %]
+    [% max = downspeed %]
+[% END %]
+[% IF downspeed < min %]
+    [% min = downspeed %]
+[% END %]
+[% END %]
+<tr>
+    <td class="right" colspan="8">
+        <b>最大(max)：</b>[% mbps(max) %]Mbps, 
+        <b>最小(min)：</b>[% mbps(min) %]Mbps, 
+        <b>平均(avg)：</b>[% IF rows.size %][% mbps(sum / rows.size) %][% END %]Mbps
+    </td>
+</tr>
+</tbody>
+</table>
+[% END %]
